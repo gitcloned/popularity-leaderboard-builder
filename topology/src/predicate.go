@@ -2,14 +2,14 @@ package topology
 
 import (
 	"liquide/re/popularity-leaderboard-builder/objects"
-	rules "liquide/re/popularity-leaderboard-builder/topology/src/rules"
+	interfaces "liquide/re/popularity-leaderboard-builder/topology/interfaces"
 )
 
 type Predicate struct {
-	rules []rules.Rule
+	rules []interfaces.Rule
 }
 
-func (p Predicate) MatchUserAction(u objects.UserAction) bool {
+func (p Predicate) MatchUserAction(u *objects.UserAction) bool {
 
 	matched := true
 

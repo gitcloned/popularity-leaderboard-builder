@@ -6,11 +6,16 @@ import (
 )
 
 type Tree struct {
-	root Node
+	Branches []Branch
+	World    Node
 
 	interfaces.ActionProcessor
 }
 
-func (t Tree) ProcessAction(u objects.UserAction) {
-	t.root.ProcessAction(u)
+func (t Tree) ProcessAction(u *objects.UserAction) {
+
+	for _, branch := range t.Branches {
+
+		branch.ProcessAction(u)
+	}
 }

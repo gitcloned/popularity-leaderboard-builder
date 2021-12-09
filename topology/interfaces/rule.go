@@ -5,5 +5,5 @@ import (
 )
 
 type Rule interface {
-	MatchUserAction(u objects.UserAction) bool
+	MatchUserAction(u *objects.UserAction) bool
 }
