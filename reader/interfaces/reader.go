@@ -2,6 +2,11 @@ package reader
 
 import "liquide/re/popularity-leaderboard-builder/objects"
 
+type EventDispatcher struct {
+	Queue    chan objects.UserAction
+	Finished bool
+}
+
 type UserActionReader interface {
-	Read(chan objects.UserAction)
+	Read(EventDispatcher)
 }
