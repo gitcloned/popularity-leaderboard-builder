@@ -6,5 +6,10 @@ import (
 )
 
 func LeaderboardStoreProvider() (interfaces.LeaderboardStore, error) {
-	return memory.InMemoryLeaderboardStore{}, nil
+
+	store := memory.InMemoryLeaderboardStore{
+		Board: make(map[string]float64),
+	}
+
+	return &store, nil
 }

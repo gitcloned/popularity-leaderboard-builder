@@ -1,9 +1,6 @@
 package main
 
 import (
-	"liquide/re/popularity-leaderboard-builder/objects"
-
-	reader "liquide/re/popularity-leaderboard-builder/reader/interfaces"
 	provider "liquide/re/popularity-leaderboard-builder/reader/providers"
 
 	"liquide/re/popularity-leaderboard-builder/topology"
@@ -27,14 +24,14 @@ func main() {
 	// TODO: use google wire DI
 
 	// create topology tree
-	tree := topology.Tree{
+	tree := &topology.Tree{
 		Branches: []topology.Branch{
 			{
 				Path:  "Channel",
 				Field: "Channel",
 				Branches: []topology.Branch{
 					{
-						Path:  "Cohert",
+						Path:  "Channel.Cohert",
 						Field: "UserCohert",
 					},
 				},
@@ -47,10 +44,6 @@ func main() {
 		MaxQueueSize: 100000,
 	}
 
-	d := reader.EventDispatcher{
-		Queue:    make(chan objects.UserAction, opts.MaxQueueSize),
-		Finished: false,
-	}
 	// get reader, and pass him the channel
 	reader, err := provider.ReaderProvider()
 
@@ -58,24 +51,21 @@ func main() {
 		panic(err)
 	}
 
-	go func() {
-		reader.Read(d)
-	}()
+	d := reader.Read(opts.MaxQueueSize)
 
 	log.Info("Would start the workers .. ")
 	wg := sync.WaitGroup{}
 	for i := 0; i < opts.MaxWorkers; i++ {
 		wg.Add(1) // Add a wait group for each worker
 		// Spawn a worker
-		go func() {
+		go func(tree *topology.Tree) {
 			for {
 				select {
 				case userAction := <-d.Queue:
-					log.Info("Processing an item..")
 					tree.ProcessAction(&userAction)
 				}
 			}
-		}()
+		}(tree)
 	}
 	wg.Wait()
 }

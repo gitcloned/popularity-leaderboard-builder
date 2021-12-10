@@ -3,7 +3,10 @@ package topology
 import (
 	"liquide/re/popularity-leaderboard-builder/objects"
 	interfaces "liquide/re/popularity-leaderboard-builder/topology/interfaces"
+	"sync"
 )
+
+var lock = &sync.Mutex{}
 
 type Tree struct {
 	Branches []Branch
@@ -12,10 +15,10 @@ type Tree struct {
 	interfaces.ActionProcessor
 }
 
-func (t Tree) ProcessAction(u *objects.UserAction) {
+func (t *Tree) ProcessAction(u *objects.UserAction) {
 
-	for _, branch := range t.Branches {
+	for idx, _ := range t.Branches {
 
-		branch.ProcessAction(u)
+		t.Branches[idx].ProcessAction(u)
 	}
 }

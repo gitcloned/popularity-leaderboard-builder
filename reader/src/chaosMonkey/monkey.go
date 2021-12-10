@@ -12,23 +12,35 @@ type ChaosMonkeyReader struct {
 	interfaces.UserActionReader
 }
 
-func (r ChaosMonkeyReader) Read(d interfaces.EventDispatcher) {
+func (r ChaosMonkeyReader) Read(maxQueueSize int) interfaces.EventDispatcher {
 
 	run := true
 
+	d := interfaces.EventDispatcher{
+		Queue:    make(chan objects.UserAction, maxQueueSize),
+		Finished: false,
+	}
+
 	log.Info("Chaos Monkey starting..")
 
-	for run == true {
+	go func() {
 
-		log.Info("Emitting an item..")
+		for run == true {
 
-		d.Queue <- objects.UserAction{
-			Item: "Item 1",
+			log.Info("Emitting an item..")
+
+			d.Queue <- objects.UserAction{
+				Item:       "Item 1",
+				Channel:    "Ch 1",
+				UserCohert: "UC 1",
+				Points:     1.0,
+			}
+
+			time.Sleep(8 * time.Second)
 		}
+	}()
 
-		log.Info("Sleeping now..")
-		time.Sleep(8 * time.Second)
-	}
+	return d
 }
 
 func (m ChaosMonkeyReader) start() {

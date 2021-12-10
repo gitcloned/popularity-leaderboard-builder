@@ -14,7 +14,7 @@ type Node struct {
 	interfaces.ActionProcessor
 }
 
-func (n Node) ProcessAction(u *objects.UserAction) {
+func (n *Node) ProcessAction(u *objects.UserAction) {
 
 	n.leaderboard.ProcessAction(u)
 }

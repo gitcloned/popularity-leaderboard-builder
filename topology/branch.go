@@ -1,10 +1,14 @@
 package topology
 
 import (
+	"fmt"
 	objects "liquide/re/popularity-leaderboard-builder/objects"
+	store "liquide/re/popularity-leaderboard-builder/store/providers"
 	interfaces "liquide/re/popularity-leaderboard-builder/topology/interfaces"
 	topology "liquide/re/popularity-leaderboard-builder/topology/src"
 	"reflect"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Branch struct {
@@ -14,10 +18,23 @@ type Branch struct {
 	Branches []Branch        // sub branches
 	nodes    map[string]Node // dub nodes for distinct value of the branch field received
 
+	initialized bool
+
 	interfaces.ActionProcessor
 }
 
-func (b Branch) node(u *objects.UserAction) Node {
+func (b *Branch) init() {
+
+	if !b.initialized {
+
+		// log.Info("Initializing branch: ", b.Path)
+
+		b.nodes = make(map[string]Node)
+		b.initialized = true
+	}
+}
+
+func (b *Branch) node(u *objects.UserAction) *Node {
 
 	// value from user action for this branch
 	// TODO: Handle if field does not exists, or value is not string or nil
@@ -26,25 +43,36 @@ func (b Branch) node(u *objects.UserAction) Node {
 	node, exists := b.nodes[branchValue]
 
 	if exists {
-		return node
+		return &node
 	} else {
+		lbStore, err := store.LeaderboardStoreProvider()
+
+		if err != nil {
+			panic(err)
+		}
+
 		node = Node{
 			name: b.Path + "." + branchValue,
 			leaderboard: topology.Leaderboard{
-				Name: b.Path + "." + branchValue,
+				Name:  b.Path + "." + branchValue,
+				Store: lbStore,
 			},
 		}
+
+		log.Info(fmt.Sprintf("Creating branch at path '%s' with name '%s'", b.Path, branchValue))
 		b.nodes[branchValue] = node
-		return node
+		return &node
 	}
 }
 
-func (b Branch) ProcessAction(u *objects.UserAction) {
+func (b *Branch) ProcessAction(u *objects.UserAction) {
+
+	b.init()
 
 	b.node(u).ProcessAction(u)
 
-	for _, branch := range b.Branches {
+	for idx, _ := range b.Branches {
 
-		branch.ProcessAction(u)
+		b.Branches[idx].ProcessAction(u)
 	}
 }
