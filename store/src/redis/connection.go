@@ -2,10 +2,10 @@ package store
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"github.com/go-redis/redis/v8"
+	log "github.com/sirupsen/logrus"
 )
 
 var lock = &sync.Mutex{}
@@ -25,7 +25,7 @@ func (rc redisConnection) connect(options redis.Options) {
 	}
 }
 
-func (rc redisConnection) connectByUrl(url string) {
+func (rc *redisConnection) connectByUrl(url string) {
 
 	options, err := redis.ParseURL(url)
 	if err != nil {
@@ -35,7 +35,9 @@ func (rc redisConnection) connectByUrl(url string) {
 	rc.rdb = redis.NewClient(options)
 
 	ctx := context.TODO()
-	_, pingErr := rc.rdb.Ping(ctx).Result()
+	resp, pingErr := rc.rdb.Ping(ctx).Result()
+
+	log.Info("Redis ping responded with ", resp)
 
 	if pingErr != nil {
 		panic(pingErr)
@@ -44,20 +46,16 @@ func (rc redisConnection) connectByUrl(url string) {
 
 var connection *redisConnection
 
-func RedisConnection(options redis.Options) *redisConnection {
+func RedisConnection(url string) *redisConnection {
 
 	if connection == nil {
 		lock.Lock()
 		defer lock.Unlock()
 		if connection == nil {
-			fmt.Println("Creating single instance now.")
+			log.Info("Creating redis instance")
 			connection = &redisConnection{}
-			connection.connect(options)
-		} else {
-			fmt.Println("Single instance already created.")
+			connection.connectByUrl(url)
 		}
-	} else {
-		fmt.Println("Single instance already created.")
 	}
 
 	return connection
