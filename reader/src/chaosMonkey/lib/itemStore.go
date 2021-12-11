@@ -1,13 +1,10 @@
 package reader
 
 import (
-	"fmt"
 	objects "liquide/re/popularity-leaderboard-builder/objects"
 	"math/rand"
 	"sync"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
 
 var lock = &sync.Mutex{}
@@ -44,7 +41,7 @@ func (s *ItemStore) add(item *objects.Item) {
 		Rank: 0,
 	})
 
-	logrus.Info(fmt.Sprintf("Added an item to store, len: %d", len(s.list)))
+	// logrus.Info(fmt.Sprintf("Added an item to store, len: %d", len(s.list)))
 }
 
 func (s *ItemStore) sortFromIndex(index int) {
@@ -71,7 +68,7 @@ func (s *ItemStore) pick() *objects.Item {
 	lock.Lock()
 	defer lock.Unlock()
 
-	logrus.Info(fmt.Sprintf("Picking an item from store, len: %d", len(s.list)))
+	// logrus.Info(fmt.Sprintf("Picking an item from store, len: %d", len(s.list)))
 
 	if len(s.list) == 0 {
 		return nil

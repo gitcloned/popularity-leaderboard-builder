@@ -9,3 +9,8 @@ type Item struct {
 	Author   string
 	Channel  string
 }
+
+func (i *Item) String() string {
+
+	return i.Content
+}

@@ -1,6 +1,9 @@
 package objects
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type UserAction struct {
 	Id         string
@@ -11,4 +14,9 @@ type UserAction struct {
 	Timestamp  time.Time
 	ActionType string
 	Points     float64
+}
+
+func (u *UserAction) String() string {
+
+	return fmt.Sprintf("%s - %s", u.Channel, u.Item.String())
 }

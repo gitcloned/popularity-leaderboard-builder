@@ -40,6 +40,7 @@ func (b *ActionBuilder) build(item *objects.Item) *objects.UserAction {
 		UserCohert: user.Cohert,
 		Timestamp:  time.Now(),
 		Points:     rand.Float64() * 10,
+		Channel:    item.Channel,
 	}
 
 	return &action
@@ -49,8 +50,6 @@ func (b *ActionBuilder) Start(d *interfaces.EventDispatcher) {
 
 	for {
 
-		logrus.Info("Building action, picking an item")
-
 		// pick item
 		item := b.Store.pick()
 
@@ -59,7 +58,7 @@ func (b *ActionBuilder) Start(d *interfaces.EventDispatcher) {
 			// build action
 			action := b.build(item)
 
-			logrus.Info("Dispatching action")
+			logrus.Info("Dispatching action: %s", action.String())
 
 			if action != nil {
 

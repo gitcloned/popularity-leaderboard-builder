@@ -6,7 +6,6 @@ import (
 	"time"
 
 	uuid "github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 )
 
 type ItemBuilder struct {
@@ -45,8 +44,6 @@ func (b *ItemBuilder) Start() {
 	go func() {
 
 		for {
-
-			logrus.Info("Building an item..")
 
 			item := b.build()
 
