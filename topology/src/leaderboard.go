@@ -13,5 +13,5 @@ type Leaderboard struct {
 func (l *Leaderboard) ProcessAction(u *objects.UserAction) {
 
 	// increment item score by the points earned through action
-	l.Store.IncrementScoreForAnItem(l.Name, u.Item, u.Points)
+	l.Store.IncrementScoreForAnItem(l.Name, u.Item.Id, u.Points)
 }

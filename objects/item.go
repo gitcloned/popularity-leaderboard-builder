@@ -1,6 +1,11 @@
 package objects
 
 type Item struct {
-	id      string
-	channel string
+	Id       string
+	ItemType string
+	Stock    string
+	Topic    string
+	Content  string
+	Author   string
+	Channel  string
 }

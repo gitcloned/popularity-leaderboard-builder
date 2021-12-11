@@ -3,18 +3,21 @@ package reader
 import (
 	"liquide/re/popularity-leaderboard-builder/objects"
 	interfaces "liquide/re/popularity-leaderboard-builder/reader/interfaces"
-	"time"
+	lib "liquide/re/popularity-leaderboard-builder/reader/src/chaosMonkey/lib"
 
 	log "github.com/sirupsen/logrus"
 )
 
 type ChaosMonkeyReader struct {
+	ItemBuilder   lib.ItemBuilder
+	ActionBuilder lib.ActionBuilder
+
 	interfaces.UserActionReader
 }
 
-func (r ChaosMonkeyReader) Read(maxQueueSize int) interfaces.EventDispatcher {
+func (r ChaosMonkeyReader) Read(maxQueueSize int) *interfaces.EventDispatcher {
 
-	run := true
+	// run := true
 
 	d := interfaces.EventDispatcher{
 		Queue:    make(chan objects.UserAction, maxQueueSize),
@@ -25,24 +28,24 @@ func (r ChaosMonkeyReader) Read(maxQueueSize int) interfaces.EventDispatcher {
 
 	go func() {
 
-		for run == true {
+		r.ItemBuilder.Store.Start()
+		r.ItemBuilder.Start()
+		r.ActionBuilder.Start(&d)
 
-			log.Info("Emitting an item..")
+		// for run == true {
 
-			d.Queue <- objects.UserAction{
-				Item:       "Item 1",
-				Channel:    "Ch 1",
-				UserCohert: "UC 1",
-				Points:     1.0,
-			}
+		// 	log.Info("Emitting an item..")
 
-			time.Sleep(8 * time.Second)
-		}
+		// 	d.Queue <- objects.UserAction{
+		// 		Item:       "Item 1",
+		// 		Channel:    "Ch 1",
+		// 		UserCohert: "UC 1",
+		// 		Points:     1.0,
+		// 	}
+
+		// 	time.Sleep(8 * time.Second)
+		// }
 	}()
 
-	return d
-}
-
-func (m ChaosMonkeyReader) start() {
-
+	return &d
 }

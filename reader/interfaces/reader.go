@@ -8,5 +8,5 @@ type EventDispatcher struct {
 }
 
 type UserActionReader interface {
-	Read(maxQueueSize int) EventDispatcher
+	Read(maxQueueSize int) *EventDispatcher
 }
