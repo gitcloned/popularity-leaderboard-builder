@@ -52,7 +52,7 @@ func (b *Branch) node(u *objects.UserAction) *Node {
 		}
 
 		node = Node{
-			name: b.Path + "." + branchValue,
+			name: b.Path + ":" + branchValue,
 			leaderboard: topology.Leaderboard{
 				Name:  b.Path + "." + branchValue,
 				Store: lbStore,

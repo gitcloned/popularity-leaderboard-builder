@@ -31,7 +31,7 @@ func main() {
 				Field: "Channel",
 				Branches: []topology.Branch{
 					{
-						Path:  "Channel.Cohert",
+						Path:  "Cohert",
 						Field: "UserCohert",
 					},
 				},
