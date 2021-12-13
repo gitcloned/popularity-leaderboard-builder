@@ -23,21 +23,56 @@ func main() {
 	// TODO: use viper: https://dev.to/techschoolguru/load-config-from-file-environment-variables-in-golang-with-viper-2j2d
 	// TODO: use google wire DI
 
-	// create topology tree
-	tree := &topology.Tree{
-		Branches: []topology.Branch{
+	garden := &topology.Garden{
+		Trees: []topology.Tree{
 			{
-				Path:  "Channel",
-				Field: "Channel",
+				Name:          "item",
+				ItemFieldName: "Id",
 				Branches: []topology.Branch{
 					{
-						Path:  "Cohert",
+						Name:  "Channel",
+						Field: "Channel",
+						Branches: []topology.Branch{
+							{
+								Name:  "Cohert",
+								Field: "UserCohert",
+							},
+						},
+					},
+				},
+			},
+			{
+				Name:          "stock",
+				ItemFieldName: "Stock",
+				Branches: []topology.Branch{
+					{
+						Name:  "Cohert",
 						Field: "UserCohert",
+					},
+					{
+						Name:  "Channel",
+						Field: "Channel",
 					},
 				},
 			},
 		},
 	}
+
+	// create topology tree
+	// tree := &topology.Tree{
+	// 	Branches: []topology.Branch{
+	// 		{
+	// 			Path:  "Channel",
+	// 			Field: "Channel",
+	// 			Branches: []topology.Branch{
+	// 				{
+	// 					Path:  "Cohert",
+	// 					Field: "UserCohert",
+	// 				},
+	// 			},
+	// 		},
+	// 	},
+	// }
 
 	opts := Options{
 		MaxWorkers:   100,
@@ -58,14 +93,14 @@ func main() {
 	for i := 0; i < opts.MaxWorkers; i++ {
 		wg.Add(1) // Add a wait group for each worker
 		// Spawn a worker
-		go func(tree *topology.Tree) {
+		go func(garden *topology.Garden) {
 			for {
 				select {
 				case userAction := <-d.Queue:
-					tree.ProcessAction(&userAction)
+					garden.ProcessAction(&userAction)
 				}
 			}
-		}(tree)
+		}(garden)
 	}
 	wg.Wait()
 }

@@ -1,20 +1,30 @@
 package topology
 
 import (
+	"fmt"
 	objects "liquide/re/popularity-leaderboard-builder/objects"
 	interfaces "liquide/re/popularity-leaderboard-builder/topology/interfaces"
 	src "liquide/re/popularity-leaderboard-builder/topology/src"
 )
 
 type Node struct {
-	name        string
+	Name        string // field name : field value
 	leaderboard src.Leaderboard
 	predicate   src.Predicate
 
-	interfaces.ActionProcessor
+	branches []Branch // any sub branch from this node
+
+	interfaces.ItemRanker
 }
 
-func (n *Node) ProcessAction(u *objects.UserAction) {
+func (n *Node) RankItem(path string, itemName string, score float64, u *objects.UserAction) {
 
-	n.leaderboard.ProcessAction(u)
+	nodePath := fmt.Sprintf("%s%s", path, n.Name)
+
+	n.leaderboard.RankItem(nodePath, itemName, score, u)
+
+	for idx, _ := range n.branches {
+
+		n.branches[idx].RankItem(fmt.Sprintf("%s%s", nodePath, "-"), itemName, score, u)
+	}
 }

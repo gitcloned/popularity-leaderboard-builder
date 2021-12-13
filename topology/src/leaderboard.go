@@ -6,12 +6,11 @@ import (
 )
 
 type Leaderboard struct {
-	Name  string
 	Store store.LeaderboardStore
 }
 
-func (l *Leaderboard) ProcessAction(u *objects.UserAction) {
+func (l *Leaderboard) RankItem(path string, itemName string, score float64, u *objects.UserAction) {
 
 	// increment item score by the points earned through action
-	l.Store.IncrementScoreForAnItem(l.Name, u.Item.Id, u.Points)
+	l.Store.IncrementScoreForAnItem(path, itemName, score)
 }
