@@ -58,7 +58,7 @@ func (b *ActionBuilder) Start(d *interfaces.EventDispatcher) {
 			// build action
 			action := b.build(item)
 
-			logrus.Info("Dispatching action: %s", action.String())
+			logrus.Info("Dispatching action > ", action.String())
 
 			if action != nil {
 

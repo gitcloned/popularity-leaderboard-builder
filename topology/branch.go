@@ -12,7 +12,7 @@ import (
 )
 
 type Branch struct {
-	Path  string // path of this branch
+	Name  string // path of this branch
 	Field string // user action field to refer for the branch value
 
 	Branches []Branch        // sub branches
@@ -20,7 +20,7 @@ type Branch struct {
 
 	initialized bool
 
-	interfaces.ActionProcessor
+	interfaces.ItemRanker
 }
 
 func (b *Branch) init() {
@@ -34,13 +34,15 @@ func (b *Branch) init() {
 	}
 }
 
-func (b *Branch) node(u *objects.UserAction) *Node {
+func (b *Branch) node(u *objects.UserAction, branches []Branch) *Node {
 
 	// value from user action for this branch
 	// TODO: Handle if field does not exists, or value is not string or nil
 	branchValue := reflect.ValueOf(*u).FieldByName(b.Field).String()
 
-	node, exists := b.nodes[branchValue]
+	path := fmt.Sprintf("%s:%s", b.Name, branchValue)
+
+	node, exists := b.nodes[path]
 
 	if exists {
 		return &node
@@ -52,27 +54,22 @@ func (b *Branch) node(u *objects.UserAction) *Node {
 		}
 
 		node = Node{
-			name: b.Path + ":" + branchValue,
+			Name: path,
 			leaderboard: topology.Leaderboard{
-				Name:  b.Path + "." + branchValue,
 				Store: lbStore,
 			},
+			branches: branches,
 		}
 
-		log.Info(fmt.Sprintf("Creating branch at path '%s' with name '%s'", b.Path, branchValue))
-		b.nodes[branchValue] = node
+		log.Info(fmt.Sprintf("Creating branch node '%s'", path))
+		b.nodes[path] = node
 		return &node
 	}
 }
 
-func (b *Branch) ProcessAction(u *objects.UserAction) {
+func (b *Branch) RankItem(path string, itemName string, score float64, u *objects.UserAction) {
 
 	b.init()
 
-	b.node(u).ProcessAction(u)
-
-	for idx, _ := range b.Branches {
-
-		b.Branches[idx].ProcessAction(u)
-	}
+	b.node(u, b.Branches).RankItem(path, itemName, score, u)
 }
