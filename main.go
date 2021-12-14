@@ -22,6 +22,12 @@ func main() {
 	// TODO: use dig, https://blog.drewolson.org/dependency-injection-in-go
 	// TODO: use viper: https://dev.to/techschoolguru/load-config-from-file-environment-variables-in-golang-with-viper-2j2d
 	// TODO: use google wire DI
+	// TODO: file based logging using rotating logs
+	// TODO: test cases
+	// TODO: metrics API, or simple GUI - can add trees/branches from GUI?
+	// TODO: Redis sorted set to have TTL
+	// TODO: Handle redis connection break, and restarts
+	// TODO: memory profiling
 
 	garden := &topology.Garden{
 		Trees: []topology.Tree{
@@ -57,22 +63,6 @@ func main() {
 			},
 		},
 	}
-
-	// create topology tree
-	// tree := &topology.Tree{
-	// 	Branches: []topology.Branch{
-	// 		{
-	// 			Path:  "Channel",
-	// 			Field: "Channel",
-	// 			Branches: []topology.Branch{
-	// 				{
-	// 					Path:  "Cohert",
-	// 					Field: "UserCohert",
-	// 				},
-	// 			},
-	// 		},
-	// 	},
-	// }
 
 	opts := Options{
 		MaxWorkers:   100,
